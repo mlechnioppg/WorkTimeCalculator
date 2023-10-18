@@ -2,9 +2,6 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  template: '<app-work-time-analyzer></app-work-time-analyzer>',
 })
-export class AppComponent {
-  title = 'WorkTimeCalculator';
-}
+export class AppComponent { }

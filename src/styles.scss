@@ -1,1 +1,40 @@
 /* You can add global styles to this file, and also import other style files */
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
+.green {
+  color: rgb(22, 121, 22) !important;
+}
+
+.red {
+  color: rgba(199, 6, 6, 0.726) !important;
+}
+
+.green-bg {
+  background-color: rgb(149, 231, 149) !important;
+}
+
+.red-bg {
+  background-color: rgba(255, 100, 100, 0.726) !important;
+}
+
+.material-icons {
+  vertical-align: middle;
+
+  &.md-18 { font-size: 18px; }
+  &.md-24 { font-size: 24px; }
+  &.md-36 { font-size: 36px; }
+  &.md-48 { font-size: 48px; }
+  &.orange600 { color: #FB8C00; }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.fill-space {
+  flex: 1 1 auto;
+}
+
+body {
+  font-family: cursive !important;
+}

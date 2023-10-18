@@ -1,0 +1,26 @@
+<mat-card class="example-card">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-checkbox [(ngModel)]="day.selected" color="primary"><b>{{ day.date }}</b></mat-checkbox>
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div *ngFor="let range of day.ranges">
+      <p>{{ range.from }} - {{ range.to }}</p>
+    </div>
+    <div *ngIf="!day.valid" class="red">
+      <p>Invalid range data</p>
+    </div>
+    <p [ngClass]="day.getClass()">Worked: {{ day.getTime() }} ({{ day.minutesToFullDay() }}) </p>
+    <div>
+      <p class="cursor-pointer" (click)="showRanges = !showRanges">Edit ranges
+        <i *ngIf="!showRanges" class="material-icons centered">expand_more</i>
+        <i *ngIf="showRanges" class="material-icons">expand_less</i>
+      </p>
+    </div>
+    <div *ngIf="showRanges">
+      <app-row [row]="row" *ngFor="let row of dayRows()" [small]="true" (removeRowEvent)="removeRow(row)"
+        (addRowEvent)="addRow()"></app-row>
+    </div>
+  </mat-card-content>
+</mat-card>

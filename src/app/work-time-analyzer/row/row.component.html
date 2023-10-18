@@ -1,0 +1,18 @@
+<div>
+  <mat-form-field>
+    <mat-select [(ngModel)]="row.type">
+      <mat-option *ngFor="let type of types" [value]="type">
+        {{ type }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field *ngIf="!small"><input matInput [(ngModel)]="row.date" placeholder="YYYY-MM-DD" /></mat-form-field>
+  <mat-form-field><input matInput [(ngModel)]="row.time" placeholder="HH:MM" /></mat-form-field>
+  <mat-checkbox *ngIf="!small" [(ngModel)]="row.selected" color="primary"></mat-checkbox>
+  <button mat-icon-button color="warn" (click)="addRow()">
+    <mat-icon>add_circle</mat-icon>
+  </button>
+  <button mat-icon-button (click)="removeRow()">
+    <mat-icon>delete</mat-icon>
+  </button>
+</div>

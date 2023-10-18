@@ -1,0 +1,215 @@
+<div>
+  <div>
+    <a target="_blank"
+       mat-raised-button
+       color="primary"
+       href="https://ppg.me1.pub.unit4bs.pl/">
+      OPEN TETA ME Page
+    </a>
+    <button mat-raised-button
+            (click)="openAboutDialog()">About</button>
+  </div>
+  <div class="section-textarea">
+    <div>
+      <mat-form-field style="width:500px;">
+        <textarea #textareaParse
+                  matInput
+                  [(ngModel)]="input"
+                  placeholder="Paste body Html markup from Teta timesheet table"
+                  style="height:200px;"
+                  spellcheck="false"></textarea>
+      </mat-form-field>
+    </div>
+    <div style="margin-left: 30px;">
+      <table *ngIf="monthSummary.length"
+             mat-table
+             [dataSource]="dataSource"
+             class="mat-elevation-z2">
+
+        <ng-container matColumnDef="month">
+          <th mat-header-cell
+              *matHeaderCellDef> Month </th>
+          <td mat-cell
+              *matCellDef="let element"> {{element.month}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="balance">
+          <th mat-header-cell
+              *matHeaderCellDef> Balance </th>
+          <td mat-cell
+              *matCellDef="let element"> {{summaryText(element.value)}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="timestamp">
+          <th mat-header-cell
+              *matHeaderCellDef> Added </th>
+          <td mat-cell
+              *matCellDef="let element"> {{element.timestamp}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="options">
+          <th mat-header-cell
+              *matHeaderCellDef> </th>
+          <td mat-cell
+              *matCellDef="let element;let i = index;"> <i style="cursor: pointer;"
+               title="Remove month data"
+               (click)="monthSummary.splice(i, 1);setMonthsLocalStorage()"
+               class="material-icons">delete</i> </td>
+        </ng-container>
+
+        <tr mat-header-row
+            *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row
+            [ngClass]="row.value >= 0 ? 'green-bg' : 'red-bg'"
+            *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <!-- <table>
+        <thead>
+          <tr>
+            <th>Month</th>
+            <th>Balance</th>
+            <th>Added</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let monthData of monthSummary; index as i">
+            <td>{{ monthData.month }}</td>
+            <td [ngClass]="monthData.value >= 0 ? 'green' : 'red'">{{ summaryText(monthData.value) }}</td>
+            <td>{{ monthData.timestamp }}</td>
+            <td> <i style="cursor: pointer;"
+                 title="Remove month data"
+                 (click)="monthSummary.splice(i, 1);setMonthsLocalStorage()"
+                 class="material-icons">delete</i></td>
+          </tr>
+        </tbody>
+      </table> -->
+      <!-- <ul>
+        <li [ngClass]="monthData.value >= 0 ? 'green' : 'red'"
+            *ngFor="let monthData of monthSummary; index as i">{{ monthData.month }}: {{ summaryText(monthData.value) }}
+          ({{ monthData.timestamp }})
+          <i style="cursor: pointer;"
+             title="Remove month data"
+             (click)="monthSummary.splice(i, 1);setMonthsLocalStorage()"
+             class="material-icons">delete</i>
+        </li>
+      </ul> -->
+      <!-- <h3 *ngIf="monthSummary.length"
+          [ngClass]="monthsSummary() >= 0 ? 'green' : 'red'"
+          style="padding-left: 40px;">Summary: {{ summaryText(monthsSummary()) }}</h3> -->
+      <mat-card *ngIf="monthSummary.length">Summary: <span [ngClass]="monthsSummary() >= 0 ? 'green' : 'red'"> {{
+          summaryText(monthsSummary())
+          }}</span></mat-card>
+    </div>
+  </div>
+  <div>
+    <!-- <button mat-raised-button color="primary" (click)="parseHtmlInput()">Parse Html</button> -->
+    <button mat-raised-button
+            color="primary"
+            (click)="parseHtmlInputTetaMe()">Parse Html</button>
+    <button mat-raised-button
+            color="primary"
+            [disabled]="!parsingSucceded"
+            (click)="processSelectedRows()">Process</button>
+    <button mat-raised-button
+            (click)="input = '';processed = false;parsingSucceded = false;">Clear</button>
+  </div>
+  <div *ngIf="isDevMode">
+    <button mat-raised-button
+            (click)="loadTestDataHtml()">Html</button>
+  </div>
+  <div [hidden]="!processed">
+    <mat-list>
+      <mat-list-item *ngIf="userFullName">
+        <h1 class="green">Hi {{ userFullName.split(' ')[1] }}!</h1>
+      </mat-list-item>
+      <mat-list-item>
+        <h2 [ngClass]="monthMinutes() >= 0 ? 'green' : 'red'">SUMMARY: {{ summaryText(monthMinutes()) }}</h2>
+      </mat-list-item>
+      <mat-list-item>
+        <h2 [ngClass]="selectedMinutes() >= 0 ? 'green' : 'red'">{{ summarySelectedText() }}</h2>
+      </mat-list-item>
+      <mat-divider></mat-divider>
+      <mat-list-item>
+        <p style="cursor:pointer;"
+           (click)="showRowSelection = !showRowSelection">Row selection
+          <i *ngIf="!showRowSelection"
+             class="material-icons">expand_more</i>
+          <i *ngIf="showRowSelection"
+             class="material-icons">expand_less</i>
+        </p>
+      </mat-list-item>
+      <mat-divider></mat-divider>
+    </mat-list>
+    <div *ngIf="showRowSelection">
+      <app-row (addRowEvent)="addRowAtIndex(i)"
+               (removeRowEvent)="removeRowAtIndex(i)"
+               [row]="row"
+               *ngFor="let row of rows; index as i"></app-row>
+    </div>
+    <div *ngIf="showDays"
+         style="display: flex;flex-direction: row;flex-wrap: wrap;margin-top:5px;">
+      <mat-card class="week-card"
+                *ngFor="let week of weeks">
+        <mat-card-header>
+          <mat-card-title>
+            <b style="margin-right: 10px;">Week {{ week.weekNumber }}</b>
+            <button mat-mini-fab
+                    color="primary"
+                    (click)="selectAll(week)">All</button>
+            <button mat-mini-fab
+                    color="warn"
+                    (click)="deselectAll(week)">None</button>
+            <span style="margin-left: 10px;"
+                  [ngClass]="selectedMinutesInWeek(week) >= 0 ? 'green' : 'red'">{{ summarySelectedInWeek(week)
+              }}</span>
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content style="display: flex;flex-direction: row;">
+          <app-day-card [day]="day"
+                        *ngFor="let day of week.days"></app-day-card>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>
+
+<ng-template #welcomeMessageTemplate>
+  <h1 mat-dialog-title>Hello guest!</h1>
+  <div mat-dialog-content>
+    <p>I hope you like this app and it makes your life a bit easier :)</p>
+    <p>That said, nothing says thank you better than the star reward!</p>
+    <p>Take some time to nominate it's author Mariusz Lechnio</p>
+    <p style="font-size:4px;">You can disable this dialog somewhere in the app.</p>
+  </div>
+  <div mat-dialog-actions>
+    <a mat-raised-button
+       color="warn"
+       href="https://ppg.werecognize.com/nominations/nominate"
+       target="_blank">GIB STARS
+      HERE</a>
+    <span class="fill-space"></span>
+    <a mat-raised-button
+       color="warn"
+       href="https://ppg.werecognize.com/nominations/nominate"
+       target="_blank">I don't
+      want to gib stars</a>
+  </div>
+</ng-template>
+
+
+<ng-template #noWorkingDaysTemplate>
+  <h3 mat-dialog-title>{{ userFullName.split(' ')[1] }}!</h3>
+  <div mat-dialog-content>
+    <p>You have not worked a single day this month!</p>
+    <p>You made a kitten very sad!!!</p>
+    <img style="height: 200px;"
+         src="assets/sad_kitten.jpg">
+  </div>
+  <div mat-dialog-actions>
+    <button mat-raised-button
+            color="warn"
+            (click)="closeNoWorkingDaysDialog()">I'm sorry</button>
+  </div>
+</ng-template>

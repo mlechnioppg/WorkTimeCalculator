@@ -1,0 +1,17 @@
+.example-card {
+  margin-right: 15px;
+  margin-bottom: 15px;
+  width: 200px;
+
+  &.possible-error {
+    background-color: rgb(255, 100, 100);
+  }
+}
+
+.centered {
+  text-align: center;
+}
+
+mat-checkbox {
+  margin-right: 5px;
+}
